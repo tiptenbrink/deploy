@@ -1,0 +1,7 @@
+host:
+user:
+port: 22
+key: './keys/ssh.key'
+svn-url: https://github.com/tiptenbrink/statusdeploy/trunk/deployment
+source: ./deployments/deployment
+target: ./deployment

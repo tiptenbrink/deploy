@@ -4,6 +4,8 @@ import yaml
 
 
 def cli(argv):
+    program_name = "__main__.py"
+
     yaml_default = "./deployments/deployment.yml"
     yaml_help = "YAML configuration file location. Optional and can be used only instead of CLI arguments. " \
                 "(default: {})".format(yaml_default)
@@ -29,7 +31,13 @@ def cli(argv):
 
     # Otherwise, it will parse all arguments from the CLI. At least, 'host' and 'user' must be supplied.
     else:
-        parser = argparse.ArgumentParser(description="Deploy app remotely.")
+        parser = argparse.ArgumentParser(formatter_class=argparse.RawDescriptionHelpFormatter,
+                                         description="Deploy app remotely using Python Fabric.\n\n"
+                                                     "Examples:\n"
+                                                     "{cli} -n bar.com -u foo -s bar_deployment -t bar_target\n"
+                                                     "{cli} --yaml deployments/foo_deployment.yml\n"
+                                                     "{cli} -n bar.com -u foo -svn https://github.com/foo/bar/trunk/baz"
+                                         .format(cli=program_name))
 
         parser.add_argument('-y', '--yaml', default=yaml_default, help=yaml_help)
         group = parser.add_argument_group("arguments")
@@ -71,8 +79,8 @@ def cli(argv):
         print("--{} detected, checking out using SVN...".format(svn_nm))
         svn_checkout(config[svn_nm], config[source_nm])
 
-    print("{} {} {} {} {} {}".format(config[host_nm], config[user_nm], config[port_nm], config[key_nm],
-                                     config[source_nm], config[target_nm]))
+    print("Arguments: {} {} {} {} {} {}".format(config[host_nm], config[user_nm], config[port_nm], config[key_nm],
+                                                config[source_nm], config[target_nm]))
 
-    # pull_run_remote(config[host_nm], config[user_nm], config[port_nm], config[key_nm], config[source_nm],
-    #                 config[target_nm])
+    pull_run_remote(config[host_nm], config[user_nm], config[port_nm], config[key_nm], config[source_nm],
+                    config[target_nm])

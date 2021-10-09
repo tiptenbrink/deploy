@@ -43,6 +43,9 @@ def pull_run_remote(host, user, port, key_path, source_dir, target_dir):
         for path in dirpath.rglob("*"):
             # because path is object not string
             path_str = str(path)
-            print(path_str)
-            c.put(path_str, remote=target_dir)
+            if ".svn" not in path_str:
+                print(path_str)
+                c.put(path_str, remote=target_dir)
+        # SVN does not remember files that are executable in Git
+        c.run("chmod +x " + target_dir + "/deploy.sh")
         c.run(target_dir + "/deploy.sh")
