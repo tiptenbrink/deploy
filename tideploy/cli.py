@@ -1,10 +1,12 @@
-from remote import pull_run_remote, svn_checkout
+from tideploy.remote import make_connection, svn_checkout
 import argparse
 import yaml
+import sys
 
 
-def cli(argv):
-    program_name = "__main__.py"
+def run():
+    arg_list = sys.argv[1:]
+    program_name = "tideploy"
 
     yaml_default = "./deployments/deployment.yml"
     yaml_help = "YAML configuration file location. Optional and can be used only instead of CLI arguments. " \
@@ -20,12 +22,12 @@ def cli(argv):
 
     # Optionally, a YAML configuration file can be supplied (by default it is assumed to be 'deployment.yml' in the
     # directory of the script file. If '-y' or '--yaml' is supplied, it will ignore all other arguments.
-    if '-y' in argv or '--yaml' in argv:
+    if '-y' in arg_list or '--yaml' in arg_list:
         print("Parsing using YAML config... Leave out -y/--yaml to use CLI arguments.")
         parser = argparse.ArgumentParser()
         parser.add_argument('-y', '--yaml', required=True, nargs='?', const=yaml_default, help=yaml_help,
                             type=argparse.FileType('r'))
-        args = parser.parse_args(argv)
+        args = parser.parse_args(arg_list)
 
         config = yaml.safe_load(args.yaml)
 
@@ -62,10 +64,10 @@ def cli(argv):
         default_source = "./deployments/deployment"
         group.add_argument('-s', '--{}'.format(source_nm), default=default_source,
                            help="Directory (relative to the script or absolute path) that contains the deployment "
-                                "files (.env, docker-compose.yml and deploy.sh). 'deploy.sh' is  required! Every file "
-                                "in the directory (including in subdirectories) will be transferred. Note that this "
-                                "is the directory download destination for SVN checkout if an SVN link was provided "
-                                "for '--{svn}'. (default: {deflt})".format(svn=svn_nm, deflt=default_source))
+                                "files (.env, docker-compose.yml and tideploy.sh). 'tideploy.sh' is  required! Every "
+                                "file in the directory (including in subdirectories) will be transferred. Note that "
+                                "this is the directory download destination for SVN checkout if an SVN link was "
+                                "provided for '--{svn}'. (default: {deflt})".format(svn=svn_nm, deflt=default_source))
         default_target = "./deployment"
 
         group.add_argument('-t', '--{}'.format(target_nm), default=default_target,
@@ -73,7 +75,7 @@ def cli(argv):
                                 "loaded into. This must be an absolute path or relative to the target server home "
                                 "directory. (default: {})".format(default_target))
 
-        config = vars(parser.parse_args(argv))
+        config = vars(parser.parse_args(arg_list))
 
     if config[svn_nm] is not None:
         print("--{} detected, checking out using SVN...".format(svn_nm))
@@ -82,5 +84,5 @@ def cli(argv):
     print("Arguments: {} {} {} {} {} {}".format(config[host_nm], config[user_nm], config[port_nm], config[key_nm],
                                                 config[source_nm], config[target_nm]))
 
-    pull_run_remote(config[host_nm], config[user_nm], config[port_nm], config[key_nm], config[source_nm],
+    make_connection(config[host_nm], config[user_nm], config[port_nm], config[key_nm], config[source_nm],
                     config[target_nm])

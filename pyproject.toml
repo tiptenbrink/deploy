@@ -1,14 +1,24 @@
 [tool.poetry]
-name = "deploy"
+name = "tideploy"
 version = "0.1.0"
 description = "Remote deployment using Fabric"
 authors = ["Tip ten Brink <75669206+tiptenbrink@users.noreply.github.com>"]
-license = "Apache-2"
+license = "Apache-2.0"
+classifiers = [
+    "Intended Audience :: Developers",
+    "Development Status :: 4 - Beta"
+]
+readme = "README.md"
+repository = "https://github.com/tiptenbrink/deploy"
 
 [tool.poetry.dependencies]
 python = "^3.7"
-fabric = "^2.6.0"
-PyYAML = "^5.4.1"
+fabric = "^2.5.0"
+PyYAML = "^5.1.2"
+paramiko = "^2.7.0"
+
+[tool.poetry.scripts]
+tideploy = "tideploy.cli:run"
 
 [tool.poetry.dev-dependencies]
 

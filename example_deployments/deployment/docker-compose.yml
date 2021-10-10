@@ -1,0 +1,17 @@
+services:
+  tiauth:
+    image: "${APP_IMAGE}:${VERSION}"
+    volumes:
+      - tiauth_res:/opt/tiauth/resources
+    ports:
+      - "127.0.0.1:${HOST_PORT}:${CONTAINER_PORT}"
+# The path indicated by $RESOURCES_SOURCE is used as the volume source, the container destination path is specified
+# above, to the right of the ':'. Changes are shared, i.e. changing a file in the host location will change the
+# container and vice versa.
+volumes:
+  tiauth_res:
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: ${RESOURCES_SOURCE}
